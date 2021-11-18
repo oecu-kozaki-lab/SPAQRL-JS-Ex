@@ -2,6 +2,9 @@
 ## 演習１：Ex1.htmlを実行して動作を確認する
 1.そのまま実行して動作を確認  
 2.「結果を整形して表示」の関数（41-43行目）を切り替えて試す  
+ - result_table(d.results.bindings);  
+ - result_show(d.results.bindings);  
+ - result_show2(d.results.bindings);  
 3.「結果をJSON形式でフォームに表示」（46-47行目）のコメントを外して，結果のデータ形式を確認   
 →下記の「JSONの整形ツール」を使うとよい  
 4. 2.と3.の結果を見比べて，結果の整形方法を理解する  
