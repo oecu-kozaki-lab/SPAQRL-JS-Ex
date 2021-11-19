@@ -16,8 +16,8 @@
 1. クエリを変更して，好みの出力をできるようにする  
  - WikidataのSPARQLクエリ  
  - Wikidata以外のSPARQLエンドポイントを用いたクエリ  
- のそれぞれを試す．
-
+ のそれぞれを試す．  
+・クエリの変更 →　171行目の<textarea id="query_area" cols="60" rows="10">...</textarea>タグの中身を変える
 2. 結果の表示方法を変更してみる  
 →新しいresult_show(d.results.bindings) 関数を作り，HTMLやJavaScriptで表示方法を指定すればよい．  
  
