@@ -31,6 +31,7 @@
 ## 演習４：簡単な検索アプリの作成
 演習１～３の内容をもとに，簡単な検索アプリを作成する
 
+## 参考情報
 ### JSONの整形ツール
 https://tools.m-bsys.com/development_tooles/json-beautifier.php
 
