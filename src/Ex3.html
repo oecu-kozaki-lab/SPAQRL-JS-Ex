@@ -23,10 +23,13 @@ $(window).load(function() {
 		//入力したSPARQLエンドポイントに置き換え
 		endpoint = document.getElementById('endpoint').value;
 		
+		//選択肢で選んだidを取得する
+		var choice = ch1.options[ch1.selectedIndex].value;
+
 		//入力したSPARQLクエリに置き換え
 		//replace(/[\n\r]/g," ")で「改行」を「空白」に置き換えている
 		//さらに＃INPUT#を入力された値と置き換えている
-		query = document.getElementById('query_area').value.replace(/[\n\r]/g," ").replace('#INPUT#',$('#input').val());
+		query = document.getElementById('query_area').value.replace(/[\n\r]/g," ").replace('#INPUT#',choice);
 		
 		//SPARQLクエリの実行（sparql.jsで定義している関数を利用）
 		qr = sendQuery(endpoint, query);
@@ -174,12 +177,11 @@ function result_table(data){
 			<input type="button" id="find_query" value="query"/>
 		</div>
 		<div>
-			<label>入力文字列：<input type="text" id="input" size="40" value="Q7105556"></label>
-      <form name="form1">
-	      <select name="color1">
+      <form name="choices">選択肢：
+	      <select id="ch1">
 	          <option value="Q7105556">大阪電気通信大学</option>
-	          <option value="yellow">黄</option>
-	          <option value="blue">青</option>
+	          <option value="Q389633">寝屋川市</option>
+	          <option value="Q742160">四条畷市</option>
 	      </select>
       </form>
 		</div>
