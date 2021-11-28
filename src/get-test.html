@@ -2,15 +2,22 @@
 <html>
   <head>
   <script>
-  /*
+
+/*
+   GETでWEB-APIにアクセスする例
+   参考にしたサイト
     https://techacademy.jp/magazine/19615
     https://ja.javascript.info/xmlhttprequest
-  */
+ */
+
     var request = new XMLHttpRequest();
+    request.open('GET', 'https://jsonplaceholder.typicode.com/users/1', true);
+
+/* こちらは，CROSの制限のため上手く動かない
     var url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=%E9%80%B1%E5%88%8A%E5%B0%91%E5%B9%B4%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%97&language=ja&origin=*";
+    request.open('GET', url, true);
+ */
  
-     request.open('GET', url, true);
-    //request.open('GET', 'https://jsonplaceholder.typicode.com/users/1', true);
     request.responseType = 'json';
  
     request.onload = function () {

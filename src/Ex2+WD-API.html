@@ -1,0 +1,255 @@
+<!--
+  Ex2.htmlとfetch-WD-API.htmlを組み合わせたコード例
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>SPARQL Sample</title>
+	<!--ライブラリ読み込み-->
+	<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="sparql.js" charset="UTF-8"></script>
+	<script>
+
+		//SPARQLエンドポイントの初期設定
+		var endpoint = "https://query.wikidata.org/sparql";
+
+		//SPARQLクエリの初期設定
+		var query = "select * {<http://www.wikidata.org/entity/Q7105556> ?p ?o} LIMIT 100";
+
+
+
+		//ページが読み込まれた際に実行される処理
+		$(window).load(function () {
+			//[query]ボタンを押した際の処理を定義
+			$('#find_query').click(function () {
+
+				//入力したSPARQLエンドポイントに置き換え
+				endpoint = document.getElementById('endpoint').value;
+
+				//入力したSPARQLクエリに置き換え
+				//replace(/[\n\r]/g," ")で「改行」を「空白」に置き換えている
+				//さらに＃INPUT#を入力された値と置き換えている
+				query = document.getElementById('query_area').value.replace(/[\n\r]/g, " ").replace('#INPUT#', $('#input').val());
+
+				//SPARQLクエリの実行（sparql.jsで定義している関数を利用）
+				qr = sendQuery(endpoint, query);
+
+				qr.fail(//クエリが失敗したときの処理
+					function (xhr, textStatus, thrownError) {
+						alert("Error: A '" + textStatus + "' occurred.");
+					}
+				);
+				qr.done(//クエリが成功したときの処理
+					function (d) {
+						//結果を整形して表示
+						result_table(d.results.bindings);
+						//result_show(d.results.bindings);
+						//result_show2(d.results.bindings);
+
+						//結果をJSON形式でフォームに表示
+						//document.getElementById('result_data').value = JSON.stringify(d.results.bindings);
+						//document.getElementById('result_data').style.display  ="block";				
+					}
+				);
+			});
+
+			//$('#result_div').hide();
+			document.getElementById('result_data').style.display = "none";
+		});
+
+
+		//結果表示用の関数【取得する変数を指定しての処理】
+		function result_show(data) {
+			var result_div = document.getElementById('result_div');//表示する領域を指定
+
+			//結果の表示処理
+			result_div.innerHTML = '<b>SPARQLクエリの結果</b><br>';
+
+			for (var i = 0; i < data.length; i++) {
+				//i番目の'p'の'value'を取得
+				var p_data = data[i]['p'].value;
+				result_div.innerHTML += i + ':p=' + p_data + '<br>';
+
+				//i番目の'o'の'value'を取得
+				var o_data = data[i]['o'].value;
+				result_div.innerHTML += i + ':o=' + o_data + '<br>';
+
+				result_div.innerHTML += '------------<br>';
+			}
+		}
+
+		//結果表示用の関数【取得する変数を指定しないで処理】
+		function result_show2(data) {
+			var result_div = document.getElementById('result_div');//表示する領域を指定
+
+			//結果の表示処理
+			result_div.innerHTML = '<b>SPARQLクエリの結果</b><br>';
+
+			for (var i = 0; i < data.length; i++) {
+				for (var key in data[0]) {
+					var val = data[i][key].value;
+					result_div.innerHTML += i + ':' + key + '=' + val + '<br>';
+				}
+				result_div.innerHTML += '------------<br>';
+			}
+		}
+
+		//結果表示用の関数【テーブル表示】※jQueryを使用して記述している
+		function result_table(data) {
+			var result_div = $('#result_div');//表示する領域を指定
+			//result_div.show();
+
+			var table = $('#result_list')[0];
+
+			if (table == undefined) {//表示する領域が定義されていないときは生成する
+				result_div.append($('<table border="1"></table>').attr({
+					'id': 'result_list',
+					'class': 'table'
+				}));
+				table = $('#result_list')[0];
+			}
+
+			while (table.rows.length > 0) {
+				table.deleteRow(0); // 行を追加
+			}
+
+			if (data instanceof Array) {
+				result_div.show();
+				// ヘッダ
+				var header = table.createTHead(); // 行を追加
+				var headerRow = header.insertRow(0);
+
+				id = 1;
+				for (var d = 0; d < data.length; d++) {
+					var row1 = table.insertRow(d + 1); // 行を追加
+
+					if (d == 0) {
+						for (var key in data[0]) {
+							var th = document.createElement('th');
+							var label = key;
+							th.innerHTML = key;
+							headerRow.appendChild(th);
+						}
+					}
+
+					var i = 0;
+					for (var key in data[d]) {
+						var cell = row1.insertCell(i++); // ２つ目以降のセルを追加
+						var value = data[d][key];
+						if (value.value != undefined) {
+							value = value.value;
+						}
+						if (value == null) {
+							value = '';
+						}
+
+						var link = true;
+						if (link) {
+							if (value != null && value.indexOf("http://") == 0) {
+								value = '<a href="' + value + '" target="_blank">'
+									+ value + '</a>';
+							}
+						}
+						cell.innerHTML = value;
+					}
+				}
+			}
+		};
+
+	</script>
+</head>
+
+<body>
+	<form id="form1" action="#">
+		<label>検索したい言葉を入力：<input type="text" id="input-message">
+			<input type="button" onclick="showMessage()" value="検索">
+	</form>
+	<p id="output-message"></p>
+	<script language="javascript" type="text/javascript">
+		const showMessage = () => {
+			const textbox = document.getElementById("input-message");
+			const inputValue = textbox.value;
+
+			//検索のurl
+			var urlw = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=" + inputValue + "&language=ja&format=json&origin=*";
+
+			fetch(urlw)
+				.then(function (response) { return response.json(); })
+				.then(function (response) {
+					var data = response;
+					console.log(data);
+
+					//結果をJSON形式でフォームに表示
+					//document.getElementById('result_data').value = JSON.stringify(data);
+
+					//取得したIDの一覧を表示
+					var Rdiv = document.getElementById('result_div');
+					Rdiv.innerHTML = "取得されたID:<br>";
+					for (var i = 0; i < data.search.length; i++) {
+						Rdiv.innerHTML += data.search[i].match.text + "：";
+						Rdiv.innerHTML += data.search[i].id + "：";
+						Rdiv.innerHTML += data.search[i].url + "<br>";
+					}
+					
+					//0番目に得られたIDを入力欄にセット
+					if(data.search.length>0){
+					 document.getElementById('input').value = data.search[0].id;
+					 }
+
+				})
+				.catch(function (error) { console.log(error); });
+
+			document.getElementsBy(input)[0].value = data.search[0].id;
+		}
+	</script>
+</body>
+
+<body>
+	<div>
+		APIの応答<br>
+		<textarea id="result_data" cols="60" rows="10"></textarea><br>
+	</div>
+	<div id="result_div">
+	</div>
+
+</body>
+
+
+<!--以下，HTMLで表示部分を作成-->
+
+<body>
+
+	<div id="container">
+		<div id="header">
+			<h2 style="background-color: #99cc00">JavaScriptによるSPARQL利用サンプル</h2>
+		</div>
+
+		<div id="right" class="right">
+			<div>
+				<label>SPARQL Endpoint：<input type="text" id="endpoint" size="40"
+						value="https://query.wikidata.org/sparql"></label>
+			</div>
+			<div>
+				<textarea id="query_area" cols="60"
+					rows="10">select * {<http://www.wikidata.org/entity/#INPUT#> ?p ?o} LIMIT 100</textarea>
+				<input type="button" id="find_query" value="query" />
+			</div>
+			<div>
+				<label>入力文字列：<input type="text" id="input" size="40" value="Q7105556"></label>
+			</div>
+
+			<div>
+				<textarea id="result_data" cols="60" rows="10"></textarea>
+			</div>
+
+			<!-- 結果ペイン -->
+			<div id="result_div">
+			</div>
+		</div>
+
+	</div>
+</body>
+
+</html>

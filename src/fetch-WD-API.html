@@ -2,29 +2,41 @@
 <html>
   <head>
   <script>
-  /*参考にしたページ
+  /* Wikidata API にfetchでアクセスする例
+  
+    API のドキュメント
+    https://www.wikidata.org/w/api.php?action=help&modules=main
+    
+    APIのアクセス例
+    https://www.wikidata.org/w/api.php?action=wbsearchentities&search=%E9%80%B1%E5%88%8A%E5%B0%91%E5%B9%B4%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%97&language=ja
+    
+    参考にしたページ
     https://www.mediawiki.org/wiki/API:Cross-site_requests#Example
     
     メモ
     https://techacademy.jp/magazine/19615
     https://ja.javascript.info/xmlhttprequest
   */
+
+// &format=json を付与することで戻り値をJSON形式に指定
+// &origin=*" を末尾に付与することで「CROSエラー」を回避できる
+  var url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=週刊少年ジャンプ&language=ja&format=json&origin=*";
   
-//  var url = "https://en.wikipedia.org/w/api.php"; 
-  var urlw = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=週刊少年ジャンプ&language=ja&format=json&origin=*";
-  /*
-var params = {
+/* 参考にしたサンプルの元コード
+   paramsからURLのオプションを指定している（上記のコードでは，直接URLに記載している）
+   
+  var url = "https://en.wikipedia.org/w/api.php"; 
+  var params = {
     action: "query",
     list: "search",
     srsearch: "Nelson Mandela",
     format: "json"
-};
-
-url = url + "?origin=*";
-Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+  };
+  url = url + "?origin=*";
+  Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
 */
 
-fetch(urlw)
+fetch(url)
     .then(function(response){return response.json();})
     .then(function(response) {
       var data = response;
@@ -36,6 +48,7 @@ fetch(urlw)
       //取得したIDの一覧を表示
       var Rdiv = document.getElementById('result_div');
       Rdiv.innerHTML = "取得されたID:<br>";
+      
       for (var i = 0; i < data.search.length; i++) {
       	Rdiv.innerHTML+=data.search[i].id +"<br>";
       }
