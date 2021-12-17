@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script>
+
+//SPARQLエンドポイントの初期設定
+//	var endpoint = "https://query.wikidata.org/sparql";
+	var endpoint ="http://kg.hozo.jp/fuseki/kgrc2020v2/sparql";
+
+//SPARQLクエリの初期設定
+	var query = "select * {?s ?p ?o} LIMIT 10";
+
+	var url = endpoint + "?query=" + encodeURIComponent(query);
+	
+	$.ajax({
+		url: url,
+		dataType: "json",
+		headers: {"Accept" : "application/json"}
+	}).done(function(json){
+		 var data = json.results.bindings;
+		 // console.log(data);
+      	      //結果をJSON形式でフォームに表示
+	  document.getElementById('result_data').value = JSON.stringify(data);
+	}).fail(function(error){
+		console.log(error);
+	});
+	
+    </script>
+
+  </head>
+  <body>
+  <div>
+		APIの応答<br>
+		<textarea id="result_data" cols="60" rows="10"></textarea><br>
+  </div>
+  <div id="result_div">
+  </div>
+  
+  </body>
+</html>
